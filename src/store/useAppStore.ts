@@ -1,4 +1,5 @@
-import create from 'zustand';
+import { create } from 'zustand';
+import { MenuItem } from '@/types/menu';
 
 interface AppState {
   theme: 'light' | 'dark';
