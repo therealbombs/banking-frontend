@@ -3,7 +3,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Home } from '@/components/features/home/Home';
 import { NotFound } from '@/components/features/errors/NotFound';
 
-const App = () => {
+export const App = () => {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>

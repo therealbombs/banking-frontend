@@ -1,105 +1,189 @@
 // src/components/features/home/Home.tsx
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Box, Grid, IconButton, ToggleButton } from '@mui/material';
-import { VisibilityOff, Visibility, GetApp } from '@mui/icons-material';
-import { OxCard } from '../../base/OxCard';
-import { OxDataGrid } from '../../base/OxDataGrid';
-import { balanceService } from '../../../services/balanceService';
-import { transactionService } from '../../../services/transactionService';
+import { 
+ Box, 
+ Grid, 
+ IconButton, 
+ Typography,
+ Paper,
+ useTheme
+} from '@mui/material';
+import { 
+ VisibilityOff, 
+ Visibility, 
+ GetApp,
+ FileDownload 
+} from '@mui/icons-material';
+import { OxCard } from '@/components/base/OxCard';
+import { OxDataGrid } from '@/components/base/OxDataGrid';
+import { GridColDef, GridValueFormatterParams } from '@mui/x-data-grid';
+import { balanceService, type Balance } from '@/services/balanceService';
+import { transactionService, type Transaction, type TransactionFilters } from '@/services/transactionService';
+import { format } from 'date-fns';
 
 export const Home = () => {
-  const [isBalanceHidden, setIsBalanceHidden] = useState(false);
-  const [filters, setFilters] = useState({
-    fromDate: null,
-    toDate: null,
-    page: 0,
-    size: 10
-  });
+ const theme = useTheme();
+ const [isBalanceHidden, setIsBalanceHidden] = useState(false);
+ const [filters, setFilters] = useState<TransactionFilters>({
+   fromDate: undefined,
+   toDate: undefined,
+   page: 0,
+   size: 10
+ });
 
-  const { data: balance } = useQuery(
-    ['balance'],
-    () => balanceService.getBalance('dummy-account-id'),
-    {
-      select: data => isBalanceHidden ? balanceService.anonymizeBalance(data) : data
-    }
-  );
+ const { data: balance, isLoading: balanceLoading } = useQuery(
+   ['balance'],
+   () => balanceService.getBalance('dummy-account-id'),
+   {
+     select: data => isBalanceHidden ? balanceService.anonymizeBalance(data) : data
+   }
+ );
 
-  const { data: transactions } = useQuery(
-    ['transactions', filters],
-    () => transactionService.getTransactions('dummy-account-id', filters)
-  );
+ const { data: transactions, isLoading: transactionsLoading } = useQuery(
+   ['transactions', filters],
+   () => transactionService.getTransactions('dummy-account-id', filters)
+ );
 
-  const handleExportPDF = () => {
-    transactionService.exportToPDF(transactions);
-  };
+ const columns: GridColDef[] = [
+   { 
+     field: 'dateTime', 
+     headerName: 'Date', 
+     width: 180,
+     valueFormatter: (params: GridValueFormatterParams) => 
+       format(new Date(params.value), 'dd/MM/yyyy HH:mm')
+   },
+   { 
+     field: 'description', 
+     headerName: 'Description', 
+     width: 300,
+     flex: 1
+   },
+   { 
+     field: 'amount', 
+     headerName: 'Amount', 
+     width: 150,
+     align: 'right',
+     headerAlign: 'right',
+     valueFormatter: (params: GridValueFormatterParams) => 
+       new Intl.NumberFormat('it-IT', {
+         style: 'currency',
+         currency: 'EUR'
+       }).format(params.value)
+   }
+ ];
 
-  const handleExportExcel = () => {
-    transactionService.exportToExcel(transactions);
-  };
+ const handleExportPDF = () => {
+   if (transactions) {
+     transactionService.exportToPDF(transactions);
+   }
+ };
 
-  return (
-    <Box sx={{ p: 3 }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <OxCard>
-            <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography variant="h6">Available Balance</Typography>
-                <Typography variant="h4">
-                  {balance?.availableBalance.toLocaleString('it-IT', { 
-                    style: 'currency', 
-                    currency: 'EUR' 
-                  })}
-                </Typography>
-              </Box>
-              <IconButton onClick={() => setIsBalanceHidden(!isBalanceHidden)}>
-                {isBalanceHidden ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </Box>
-          </OxCard>
-        </Grid>
+ const handleExportExcel = () => {
+   if (transactions) {
+     transactionService.exportToExcel(transactions);
+   }
+ };
 
-        <Grid item xs={12}>
-          <OxCard>
-            <Box sx={{ p: 2 }}>
-              <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="h6">Transactions</Typography>
-                <Box>
-                  <IconButton onClick={handleExportPDF}>
-                    <GetApp />
-                  </IconButton>
-                  <IconButton onClick={handleExportExcel}>
-                    <GetApp />
-                  </IconButton>
-                </Box>
-              </Box>
-              
-              <OxDataGrid
-                rows={transactions || []}
-                columns={[
-                  { field: 'dateTime', headerName: 'Date', width: 200 },
-                  { field: 'description', headerName: 'Description', width: 300 },
-                  { 
-                    field: 'amount', 
-                    headerName: 'Amount', 
-                    width: 150,
-                    valueFormatter: (params) => 
-                      params.value.toLocaleString('it-IT', {
-                        style: 'currency',
-                        currency: 'EUR'
-                      })
-                  }
-                ]}
-                pageSize={filters.size}
-                onPageChange={(newPage) => setFilters(prev => ({ ...prev, page: newPage }))}
-                filterMode="server"
-                paginationMode="server"
-              />
-            </Box>
-          </OxCard>
-        </Grid>
-      </Grid>
-    </Box>
-  );
+ const formatCurrency = (amount: number) => {
+   return new Intl.NumberFormat('it-IT', {
+     style: 'currency',
+     currency: 'EUR'
+   }).format(amount);
+ };
+
+ return (
+   <Box sx={{ p: 3 }}>
+     <Grid container spacing={3}>
+       {/* Balance Card */}
+       <Grid item xs={12} md={6} lg={4}>
+         <OxCard>
+           <Box sx={{ p: 3 }}>
+             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+               <Typography variant="h6" color="textSecondary">
+                 Available Balance
+               </Typography>
+               <IconButton 
+                 onClick={() => setIsBalanceHidden(!isBalanceHidden)}
+                 size="small"
+               >
+                 {isBalanceHidden ? <VisibilityOff /> : <Visibility />}
+               </IconButton>
+             </Box>
+             
+             {balanceLoading ? (
+               <Typography>Loading...</Typography>
+             ) : balance ? (
+               <>
+                 <Typography variant="h4" component="div" sx={{ mb: 1 }}>
+                   {formatCurrency(balance.availableBalance)}
+                 </Typography>
+                 <Typography variant="body2" color="textSecondary">
+                   Last updated: {format(new Date(balance.lastUpdate), 'dd/MM/yyyy HH:mm')}
+                 </Typography>
+               </>
+             ) : null}
+           </Box>
+         </OxCard>
+       </Grid>
+
+       {/* Transactions Card */}
+       <Grid item xs={12}>
+         <OxCard>
+           <Box sx={{ p: 3 }}>
+             <Box sx={{ 
+               display: 'flex', 
+               justifyContent: 'space-between', 
+               alignItems: 'center', 
+               mb: 3 
+             }}>
+               <Typography variant="h6" color="textSecondary">
+                 Recent Transactions
+               </Typography>
+               <Box>
+                 <IconButton 
+                   onClick={handleExportPDF}
+                   title="Export to PDF"
+                   size="small"
+                   sx={{ mr: 1 }}
+                 >
+                   <FileDownload />
+                 </IconButton>
+                 <IconButton 
+                   onClick={handleExportExcel}
+                   title="Export to Excel"
+                   size="small"
+                 >
+                   <GetApp />
+                 </IconButton>
+               </Box>
+             </Box>
+             
+             <OxDataGrid
+               rows={transactions || []}
+               columns={columns}
+               loading={transactionsLoading}
+               pagination
+               paginationMode="server"
+               rowCount={100} // Dovrebbe venire dal backend
+               page={filters.page}
+               pageSize={filters.size}
+               onPageChange={(newPage) => setFilters(prev => ({ ...prev, page: newPage }))}
+               onPageSizeChange={(newSize) => setFilters(prev => ({ ...prev, size: newSize }))}
+               autoHeight
+               disableSelectionOnClick
+               sx={{
+                 '& .MuiDataGrid-row:hover': {
+                   backgroundColor: theme.palette.action.hover
+                 }
+               }}
+             />
+           </Box>
+         </OxCard>
+       </Grid>
+     </Grid>
+   </Box>
+ );
 };
+
+export default Home;
