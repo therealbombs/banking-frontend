@@ -23,7 +23,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
               onClose();
             }}
           >
-            {item.icon && <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>}
+            {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
             <ListItemText primary={item.textKey} />
           </ListItem>
         ))}

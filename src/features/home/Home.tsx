@@ -6,7 +6,6 @@ import {
  Grid, 
  IconButton, 
  Typography,
- Paper,
  useTheme
 } from '@mui/material';
 import { 
@@ -160,24 +159,29 @@ export const Home = () => {
              </Box>
              
              <OxDataGrid
-               rows={transactions || []}
-               columns={columns}
-               loading={transactionsLoading}
-               pagination
-               paginationMode="server"
-               rowCount={100} // Dovrebbe venire dal backend
-               page={filters.page}
-               pageSize={filters.size}
-               onPageChange={(newPage) => setFilters(prev => ({ ...prev, page: newPage }))}
-               onPageSizeChange={(newSize) => setFilters(prev => ({ ...prev, size: newSize }))}
-               autoHeight
-               disableSelectionOnClick
-               sx={{
-                 '& .MuiDataGrid-row:hover': {
-                   backgroundColor: theme.palette.action.hover
-                 }
-               }}
-             />
+	       rows={transactions || []}
+	       columns={columns}
+	       loading={transactionsLoading}
+	       pagination
+	       paginationMode="server"
+	       rowCount={100}
+	       paginationModel={{
+	         page: filters.page,
+	         pageSize: filters.size
+	       }}
+	       onPaginationModelChange={(model) => setFilters(prev => ({ 
+	         ...prev, 
+	         page: model.page,
+	         size: model.pageSize 
+	       }))}
+	       autoHeight
+	       disableRowSelectionOnClick
+	       sx={{
+	         '& .MuiDataGrid-row:hover': {
+	           backgroundColor: theme.palette.action.hover
+	         }
+	       }}
+/>
            </Box>
          </OxCard>
        </Grid>
