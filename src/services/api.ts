@@ -1,7 +1,8 @@
+// src/services/api.ts
 import axios from 'axios';
 import { API_CONFIG } from '../config/api';
 
-const api = axios.create({
+export const api = axios.create({  // Aggiungiamo 'export'
   baseURL: API_CONFIG.baseURL,
 });
 
