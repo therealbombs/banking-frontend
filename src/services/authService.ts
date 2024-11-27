@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { User, Account } from '@/store/useAuthStore';
+import type { User, Account } from '../types/auth';
 
 interface LoginResponse {
   customerId: string;
