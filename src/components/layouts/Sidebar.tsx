@@ -1,3 +1,4 @@
+import React from 'react';
 import { List, ListItem, ListItemIcon, ListItemText, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { MenuItem } from '@/types/menu';
