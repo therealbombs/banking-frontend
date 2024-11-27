@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Typography, Alert, Container } from '@mui/material';
+import { 
+  Box, 
+  Card, 
+  TextField, 
+  Button, 
+  Typography, 
+  Alert,
+  Container 
+} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useAuthStore } from '@/store/useAuthStore';
 import { authService } from '@/services/authService';
