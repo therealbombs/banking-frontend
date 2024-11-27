@@ -3,15 +3,14 @@ import { API_CONFIG } from '../config/api';
 
 export const api = axios.create({
   baseURL: API_CONFIG.baseURL,
-  headers: API_CONFIG.headers,
-  withCredentials: true // This is important for CORS with credentials
+  withCredentials: false // Set to false if not using credentials
 });
 
-// Interceptor for token handling
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  config.headers['Content-Type'] = 'application/json';
   return config;
 });
