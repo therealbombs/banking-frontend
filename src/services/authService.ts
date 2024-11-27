@@ -21,10 +21,19 @@ interface LoginResponse {
 
 export const authService = {
   login: async (username: string, password: string): Promise<LoginResponse> => {
-    const { data } = await api.post('/auth/login', {
-      username,
-      password
-    });
-    return data;
+    try {
+      const { data } = await api.post('/auth/login', {
+        username,
+        password
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   }
 };
