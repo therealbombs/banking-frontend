@@ -17,7 +17,7 @@ import {
 import { OxCard } from '@/components/base/OxCard';
 import { OxDataGrid } from '@/components/base/OxDataGrid';
 import { GridColDef, GridValueFormatterParams } from '@mui/x-data-grid';
-import { balanceService, type Balance } from '@/services/balanceService';
+import { balanceService } from '@/services/balanceService';
 import { transactionService, type TransactionFilters } from '@/services/transactionService';
 import { format } from 'date-fns';
 

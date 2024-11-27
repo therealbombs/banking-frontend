@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
-import { MainLayout } from './components/layouts/MainLayout';  // cambia il path
-import { Home } from './features/home/Home';  // cambia il path
-import { NotFound } from './features/errors/NotFound';  // cambia il path
+import { MainLayout } from './components/layouts/MainLayout';
+import { Home } from './features/home/Home';
+import { NotFound } from './features/errors/NotFound';
 
 export const App = () => {
   return (
@@ -13,5 +13,3 @@ export const App = () => {
     </Routes>
   );
 };
-
-export default App;
