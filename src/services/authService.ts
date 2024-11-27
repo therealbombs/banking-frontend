@@ -1,5 +1,10 @@
-import { api } from './api';
-import type { User, Account } from '../types/auth';
+export interface Account {
+  accountNumber: string;
+  name: string;
+  type: string;
+  primary: boolean;
+  attributes: Record<string, string>;
+}
 
 interface LoginResponse {
   customerId: string;

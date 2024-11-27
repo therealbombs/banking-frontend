@@ -1,17 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Card, 
-  TextField, 
-  Button, 
-  Typography, 
-  Alert,
-  Container 
-} from '@mui/material';
+import { TextField, Button, Typography, Alert, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useAuthStore } from '@/store/useAuthStore';
 import { authService } from '@/services/authService';
+
 
 export const LoginPage = () => {
   const navigate = useNavigate();
